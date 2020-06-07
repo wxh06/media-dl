@@ -1,3 +1,4 @@
 [report]
 omit = test_*.py
        *_test.py
+exclude_lines = if __name__ == (?:'|")__main__(?:'|"):
