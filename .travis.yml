@@ -9,8 +9,10 @@ python:
   - "3.9-dev"
   - "nightly"
 before_install:
+  - sudo apt -qq update
   - pip install -U pip setuptools wheel
 install:
+  - sudo apt -qq install aria2
   - pip install -Ur requirements.txt
   - pip install -U flake8 pytest-cov
 script:
