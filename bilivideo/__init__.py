@@ -15,34 +15,56 @@ def playinfo(vid: str):
     )
 
 
-def aria2(vid: str):
+def urls(vid: str):
     pi = playinfo(vid)
-    quality = dict(
-        zip(
+    q = dict(
+       zip(
             pi['data']['accept_quality'],
             pi['data']['accept_description']
         )
     )
+    return {
+        'video': [
+            (
+                v['id'],
+                v['base_url'],
+                {'referer': 'http://bilibili.com'},
+                q[v['id']]
+            )
+            for v in pi['data']['dash']['video']
+        ],
+        'audio': [
+            (
+                a['id'],
+                a['base_url'],
+                {'referer': 'http://bilibili.com'},
+                q[int(str(a['id'])[-2:])]
+            )
+            for a in pi['data']['dash']['audio']
+        ]
+    }
 
-    for video in pi['data']['dash']['video']:
-        print(quality[video['id']], video['base_url'])
-        subprocess.run(
-            [
-                'aria2c',
-                f"--dir={vid}/video/{video['id']}",
-                '--header=Referer: http://bilibili.com',
-                video['base_url']
-            ]
-        )
-    for audio in pi['data']['dash']['audio']:
-        subprocess.run(
-            [
-                'aria2c',
-                f"--dir={vid}/audio/{audio['id']}",
-                '--referer=http://bilibili.com',
-                audio['base_url']
-            ]
-        )
+
+def aria2c(url, dir, kwargs):
+    args = []
+    if 'referer' in kwargs:
+        args.append(f"--referer={kwargs['referer']}")
+    subprocess.run(
+        [
+            'aria2c',
+            f'--dir={dir}',
+            *args,
+            url
+        ]
+    )
+
+
+def aria2(vid: str):
+
+    u = urls(vid)
+    for t in u:
+        for f in u[t]:
+            aria2c(f[1], f"{vid}/{t}/{f[0]}", f[2])
 
 
 if __name__ == '__main__':
