@@ -1,4 +1,5 @@
 language: python
+cache: pip
 python:
   - "3.6"
   - "3.6-dev"
@@ -14,9 +15,9 @@ before_install:
 install:
   - sudo apt -qq install aria2
   - pip install -Ur requirements.txt
-  - pip install -U flake8 pytest-cov
+  - pip install -U flake8 pytest-cov codecov
 script:
   - flake8
-  - pytest
+  - pytest --cov=.
 after_success:
   - codecov
