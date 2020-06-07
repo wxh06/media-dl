@@ -3,4 +3,4 @@
 [![Build Status](https://travis-ci.com/wxh06/bilibili-dl.svg)](https://travis-ci.com/wxh06/bilibili-dl)
 [![codecov](https://codecov.io/gh/wxh06/bilibili-dl/graph/badge.svg)](https://codecov.io/gh/wxh06/bilibili-dl)
 
-Command-line program to download videos from Bilibili.com
+Command-line program to download videos from [Bilibili.com](https://www.bilibili.com/)
