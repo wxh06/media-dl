@@ -1,12 +1,13 @@
 import json
 from urllib.request import urlopen
+import uuid
 
 
 def music(match):
     res = json.loads(
         urlopen(
             'https://wwwapi.kugou.com/yy/index.php?r=play/getdata'
-            f'&hash={match.group(1)}&mid=d41d8cd98f00b204e9800998ecf8427e'
+            f'&hash={match.group(1)}&mid={uuid.uuid4().hex}'
         ).read()
     )
     assert res['status'] and not res['err_code']
