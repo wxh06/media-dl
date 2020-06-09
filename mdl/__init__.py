@@ -17,7 +17,3 @@ def download(url: str, dler: str = downloader.aria2.aria2c):
             dler(*u)
         except TypeError:
             downloader.downloaders[dler](*u)
-
-
-if __name__ == '__main__':
-    download(sys.argv[1])
