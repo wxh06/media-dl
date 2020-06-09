@@ -45,4 +45,8 @@ def urls(vid: str):
 
 def video(match):
     u = urls(match.group(1))
-    return [(f[1], f"{match.group(1)}/{t}/{f[0]}", f[2]) for t in u for f in u[t]]
+    return [
+        (f[1], f"{match.group(1)}/{t}/{f[0]}", f[2])
+        for t in u
+        for f in u[t]
+    ]
