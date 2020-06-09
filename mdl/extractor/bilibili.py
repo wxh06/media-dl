@@ -1,7 +1,5 @@
 import json
 import re
-import subprocess
-import sys
 
 import requests
 
@@ -45,27 +43,6 @@ def urls(vid: str):
     }
 
 
-def aria2c(url, dir, kwargs):
-    args = []
-    if 'referer' in kwargs:
-        args.append(f"--referer={kwargs['referer']}")
-    subprocess.run(
-        [
-            'aria2c',
-            f'--dir={dir}',
-            *args,
-            url
-        ]
-    )
-
-
-def aria2(vid: str):
-
-    u = urls(vid)
-    for t in u:
-        for f in u[t]:
-            aria2c(f[1], f"{vid}/{t}/{f[0]}", f[2])
-
-
-if __name__ == '__main__':
-    aria2(sys.argv[1])
+def video(g):
+    u = urls(g.group(1))
+    return [(f[1], f"{g.group(1)}/{t}/{f[0]}", f[2]) for t in u for f in u[t]]
