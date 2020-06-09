@@ -10,7 +10,7 @@ def music(match):
             f'&hash={match.group(1)}&mid={uuid.uuid4().hex}'
         ).read()
     )
-    assert res['status'] and not res['err_code']
+    assert res['status'] and not res['err_code'], res
     return [
         [
             res['data']['play_url'],
