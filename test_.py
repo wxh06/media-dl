@@ -66,7 +66,7 @@ class TestBiliVideo(unittest.TestCase):
 class TestKugouMusic(unittest.TestCase):
 
     def test_aria2(self):
-        mdl.download('https://www.kugou.com/song/#hash=739A2A8B72D1D8B8DCC476B0A62F3C3F')
+        mdl.download('https://www.kugou.com/song/#hash=7C465E76DF08FFB597501B9B94C48390')
 
 
 if __name__ == '__main__':
