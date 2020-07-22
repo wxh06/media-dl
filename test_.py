@@ -27,32 +27,28 @@ class TestBiliVideo(unittest.TestCase):
         self.assertion('av7')
 
     def test_av_URLs(self):
-        mdl.download('https://www.bilibili.com/video/av7')
-        self.assertion('av7')
-        mdl.download('https://www.bilibili.com/av7')
-        self.assertion('av7')
-        mdl.download('https://bilibili.com/video/av7')
-        self.assertion('av7')
-        mdl.download('http://www.bilibili.com/video/av7')
-        self.assertion('av7')
-        mdl.download('http://bilibili.com/video/av7')
-        self.assertion('av7')
+        for url in [
+            'https://www.bilibili.com/video/av7',
+            'https://www.bilibili.com/av7',
+            'https://bilibili.com/video/av7',
+            'http://www.bilibili.com/video/av7',
+            'http://bilibili.com/video/av7'
+        ]:
+            self.assertTrue(mdl.extract(url))
 
     def test_BV(self):
         mdl.download('BV1XW411M7Gu')
         self.assertion('BV1XW411M7Gu', 4, 2)
 
     def test_BV_URLs(self):
-        mdl.download('https://www.bilibili.com/video/BV1xx411c7m9')
-        self.assertion('BV1xx411c7m9')
-        mdl.download('https://www.bilibili.com/BV1xx411c7m9')
-        self.assertion('BV1xx411c7m9')
-        mdl.download('https://bilibili.com/video/BV1xx411c7m9')
-        self.assertion('BV1xx411c7m9')
-        mdl.download('http://www.bilibili.com/video/BV1xx411c7m9')
-        self.assertion('BV1xx411c7m9')
-        mdl.download('http://bilibili.com/video/BV1xx411c7m9')
-        self.assertion('BV1xx411c7m9')
+        for url in [
+            'https://www.bilibili.com/video/BV1xx411c7m9',
+            'https://www.bilibili.com/BV1xx411c7m9',
+            'https://bilibili.com/video/BV1xx411c7m9',
+            'http://www.bilibili.com/video/BV1xx411c7m9',
+            'http://bilibili.com/video/BV1xx411c7m9'
+        ]:
+            self.assertTrue(mdl.extract(url))
 
     def test_aria2(self):
         mdl.download('av7', 'aria2')
