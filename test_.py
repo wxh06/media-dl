@@ -68,7 +68,7 @@ class TestKugouMusic(unittest.TestCase):
     def test_aria2(self):
         mdl.download(
             'https://www.kugou.com/song/#hash='
-            '7C465E76DF08FFB597501B9B94C48390'
+            '5B40301A02B4A431F8CEEACBC58C50F0'
         )
 
 
