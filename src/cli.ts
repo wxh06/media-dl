@@ -22,6 +22,7 @@ if (argv.version) {
   process.exit(0);
 }
 
-if (argv.list) (async () => console.table(await extract(argv._[0], argv.n)))();
+if (argv.list)
+  extract(argv._[0], argv.n).then(console.table).catch(console.error);
 if (argv.format)
-  (async () => console.log(await extract(argv._[0], argv.n, argv.f)))();
+  extract(argv._[0], argv.n, argv.f).then(console.log).catch(console.error);

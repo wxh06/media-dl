@@ -10,6 +10,25 @@ interface SupportFormat {
   codecs: null;
 }
 
+interface DASH {
+  id: number;
+  base_url: string;
+  backup_url: string[];
+  mime_type: string;
+  codecs: string;
+  width: number;
+  height: number;
+  codecid: number;
+}
+
+interface DURL {
+  order: number;
+  length: number;
+  size: number;
+  url: string;
+  backup_url: string[];
+}
+
 export default {
   hosts: ["bilibili.com", "www.bilibili.com"],
   extract: async (pathname, no, format) => {
@@ -24,19 +43,61 @@ export default {
     const { aid } = view.data;
     let { cid } = view.data;
     if (no) cid = view.data.pages[parseInt(no, 10)].cid;
-    const { data: playURL } = await axios.get(
+
+    const { data: durl } = await axios.get(
       `https://api.bilibili.com/x/player/playurl?avid=${aid}&cid=${cid}&qn=${
-        format ?? ""
+        typeof format === "number" && Number.isInteger(format) && format < 1000
+          ? format
+          : ""
       }`
     );
-    if (playURL.code !== 0) throw Error(playURL.message);
-    if (format) return playURL.data.durl;
-    return (playURL.data.support_formats as SupportFormat[]).reduce(
-      (p, c) =>
-        Object.assign(p, {
-          [c.quality]: { name: c.format, description: c.new_description },
-        }),
-      {}
+    if (durl.code !== 0) throw Error(durl.message);
+    if (typeof format === "number" && Number.isInteger(format) && format < 1000)
+      return (durl.data.durl as DURL[]).map(({ url }) => url);
+
+    const { data: dash } = await axios.get(
+      `https://api.bilibili.com/x/player/playurl?avid=${aid}&cid=${cid}&fnval=16`
     );
+    if (dash.code !== 0) throw Error(dash.message);
+    if (format && Number.isInteger(format))
+      return (dash.data.dash.audio as DASH[])
+        .filter(({ id }) => id === format)
+        .map((audio) => audio.base_url);
+    if (format)
+      return (dash.data.dash.video as DASH[])
+        .filter((video) => `${video.id}.${video.codecid}` === format.toString())
+        .map((video) => video.base_url);
+
+    return {
+      ...(durl.data.support_formats as SupportFormat[]).reduce(
+        (p, c) =>
+          Object.assign(p, {
+            [c.quality]: { format: c.format, description: c.new_description },
+          }),
+        {}
+      ),
+      ...(dash.data.dash.video as DASH[]).reduce(
+        (p, c) =>
+          Object.assign(p, {
+            [`${c.id}.${c.codecid}`]: {
+              format: c.mime_type,
+              description: [c.width, c.height],
+              codecs: c.codecs,
+            },
+          }),
+        {}
+      ),
+      ...(dash.data.dash.audio as DASH[]).reduce(
+        (p, c) =>
+          Object.assign(p, {
+            [c.id]: {
+              format: c.mime_type,
+              description: [c.width, c.height],
+              codecs: c.codecs,
+            },
+          }),
+        {}
+      ),
+    };
   },
 } as Extractor;
