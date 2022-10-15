@@ -15,11 +15,12 @@ module.exports = {
         "airbnb-base",
         "airbnb-typescript/base",
         "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:prettier/recommended",
       ],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: "./tsconfig.eslint.json",
+        project: "./tsconfig.json",
       },
       rules: {
         quotes: [
@@ -30,7 +31,7 @@ module.exports = {
       },
     },
     {
-      files: ["*.config.*", ".*rc.*", "*.cjs"],
+      files: ["*.config.*", ".*rc.*"],
       rules: {
         "import/no-extraneous-dependencies": [
           "error",
