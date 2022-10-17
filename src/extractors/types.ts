@@ -1,14 +1,5 @@
 export type Extractor = {
   hosts: string[];
-  list: (
-    pathname: string,
-    searchParams: URLSearchParams,
-    no?: string
-  ) => Promise<unknown>;
-  extract: (
-    pathname: string,
-    searchParams: URLSearchParams,
-    no: string | undefined,
-    formats: Array<string | number>
-  ) => Promise<unknown>;
+  list: (url: URL) => Promise<Record<string, Record<string, unknown>>>;
+  extract: (url: URL, formats: Array<string | number>) => Promise<string[][]>;
 };

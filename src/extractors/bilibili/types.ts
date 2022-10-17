@@ -28,7 +28,7 @@ export interface PlayURLDurl extends PlayURL {
   durl: DURL[];
 }
 
-interface SupportFormat {
+export interface SupportFormat {
   quality: number;
   format: string;
   new_description: string;

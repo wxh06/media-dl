@@ -1,16 +1,17 @@
 import axios from "axios";
-import { Extractor } from "../types";
-import type { APIResponse, View, PlayURLDash, PlayURLDurl } from "./types";
+import type { Extractor } from "../types";
+import getDash from "./dash";
+import getDurl from "./durl";
+import type { APIResponse, View } from "./types";
 
-async function getVideo(
-  pathname: string,
-  searchParams: URLSearchParams,
-  no?: string
-): Promise<[number, number]> {
+async function getVideo({
+  pathname,
+  searchParams,
+}: URL): Promise<[number, number]> {
   // 从 pathname 中提取视频编号
   const avid = /av(\d+)/i.exec(pathname)?.[1] ?? "";
   const bvid = /BV[a-zA-Z\d]+/i.exec(pathname)?.[0] ?? "";
-  const p = no ?? searchParams.get("p");
+  const p = searchParams.get("p");
   if (!avid && !bvid) throw Error(`Could not extract video from ${pathname}`);
 
   // 获取视频 cid
@@ -27,19 +28,11 @@ async function getVideo(
 
 export default {
   hosts: ["bilibili.com", "www.bilibili.com"],
-  async list(pathname, searchParams, no) {
-    const [avid, cid] = await getVideo(pathname, searchParams, no);
+  async list(url) {
+    const [avid, cid] = await getVideo(url);
 
-    const {
-      data: {
-        code,
-        data: { dash, support_formats: supportedFormats },
-        message,
-      },
-    } = await axios.get<APIResponse<PlayURLDash>>(
-      `https://api.bilibili.com/x/player/playurl?avid=${avid}&cid=${cid}&fnval=16`
-    );
-    if (code !== 0) throw Error(message);
+    const supportedFormats = await getDurl(avid, cid);
+    const dash = await getDash(avid, cid);
 
     return {
       ...supportedFormats.reduce(
@@ -49,58 +42,23 @@ export default {
           }),
         {}
       ),
-      ...[...dash.video, ...dash.audio].reduce(
-        (p, c) =>
-          Object.assign(p, {
-            [c.codecid ? `${c.id}.${c.codecid}` : c.id]: {
-              format: c.mime_type,
-              description: [c.width, c.height],
-              codecs: c.codecs,
-            },
-          }),
-        {}
-      ),
+      ...dash,
     };
   },
 
-  async extract(pathname, searchParams, no, formats) {
-    const [avid, cid] = await getVideo(pathname, searchParams, no);
+  async extract(videoUrl, formats) {
+    const [avid, cid] = await getVideo(videoUrl);
+    const dash = await getDash(avid, cid, true);
+
     return Promise.all(
       formats
         .map((format) => format.toString())
         .map(async (format) => {
-          const videoOnly = format.includes(".");
-          const dash = videoOnly || format.length > 4;
+          if (format.includes(".") || format.length > 4)
+            // eslint-disable-next-line no-underscore-dangle
+            return [dash[format]._url];
 
-          if (!dash) {
-            const {
-              data: {
-                code,
-                data: { durl },
-                message,
-              },
-            } = await axios.get<APIResponse<PlayURLDurl>>(
-              `https://api.bilibili.com/x/player/playurl?avid=${avid}&cid=${cid}&qn=${format}`
-            );
-            if (code !== 0) throw Error(message);
-            return durl.map(({ url }) => url);
-          }
-
-          const {
-            data: { code, data, message },
-          } = await axios.get<APIResponse<PlayURLDash>>(
-            `https://api.bilibili.com/x/player/playurl?avid=${avid}&cid=${cid}&fnval=16`
-          );
-          if (code !== 0) throw Error(message);
-          if (videoOnly)
-            return data.dash.video
-              .filter(
-                (video) => `${video.id}.${video.codecid}` === format.toString()
-              )
-              .map((video) => video.base_url);
-          return data.dash.audio
-            .filter(({ id }) => id.toString() === format)
-            .map((audio) => audio.base_url);
+          return getDurl(avid, cid, format);
         })
     );
   },

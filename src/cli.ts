@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import minimist from "minimist";
-import { extract } from ".";
+import { extract, list } from ".";
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["help", "version", "debug", "list"],
@@ -23,11 +23,10 @@ if (argv.version) {
   process.exit(0);
 }
 
-if (argv.list)
-  extract(argv._[0], argv.n as string)
-    .then(console.table)
-    .catch(console.error);
+const url = new URL(argv._[0]);
+
+if (argv.list) list(url).then(console.table).catch(console.error);
 if (argv.format)
-  extract(argv._[0], (argv.n as string) ?? undefined, argv.f as string[])
+  extract(url, argv.f as string[])
     .then(console.log)
     .catch(console.error);
