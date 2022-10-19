@@ -1,32 +1,41 @@
 #!/usr/bin/env node
 
-import minimist from "minimist";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { extract, list } from ".";
 
-const argv = minimist(process.argv.slice(2), {
-  boolean: ["help", "version", "debug", "list"],
-  alias: { h: "help", v: "version", d: "debug", l: "list", f: "format" },
-  string: ["n", "format"],
-});
-
-/* eslint-disable no-console */
-if (argv.debug) console.log(argv);
-
-if (argv.help) {
-  console.log("You are helpless!");
-  process.exit(0);
-}
-
-if (argv.version) {
+// const argv = minimist(process.argv.slice(2), {
+//   boolean: ["help", "version", "debug", "list"],
+//   alias: { h: "help", v: "version", d: "debug", l: "list", f: "format" },
+//   string: ["n", "format"],
+// });
+yargs(hideBin(process.argv))
+  .alias("h", "help")
+  .alias("v", "version")
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
-  console.log((require("../package.json") as { version: string }).version);
-  process.exit(0);
-}
-
-const url = new URL(argv._[0]);
-
-if (argv.list) list(url).then(console.table).catch(console.error);
-if (argv.format)
-  extract(url, argv.f as string[])
-    .then(console.log)
-    .catch(console.error);
+  .version((require("../package.json") as { version: string }).version)
+  .command(
+    "list <url>",
+    "",
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    (yargs) => yargs.positional("url", { type: "string" }),
+    (argv) => {
+      list(new URL(argv.url!)).then(console.table).catch(console.error);
+    }
+  )
+  .command(
+    "extract <url>",
+    "",
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    (yargs) =>
+      yargs
+        .positional("url", { type: "string" })
+        .option("formats", { alias: "f", type: "array" })
+        .demandOption("formats"),
+    (argv) => {
+      extract(new URL(argv.url!), argv.formats!)
+        .then(console.log)
+        .catch(console.error);
+    }
+  )
+  .parseSync();

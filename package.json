@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
-    "minimist": "^1.2.6"
+    "yargs": "^17.6.0"
   },
   "devDependencies": {
-    "@types/minimist": "^1.2.2",
     "@types/node": "^18.0.0",
+    "@types/yargs": "^17.0.13",
     "@typescript-eslint/eslint-plugin": "^5.28.0",
     "@typescript-eslint/parser": "^5.28.0",
     "eslint": "^8.17.0",
