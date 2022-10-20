@@ -2,13 +2,8 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { extract, list } from ".";
+import { extract, list } from "@media-dl/core";
 
-// const argv = minimist(process.argv.slice(2), {
-//   boolean: ["help", "version", "debug", "list"],
-//   alias: { h: "help", v: "version", d: "debug", l: "list", f: "format" },
-//   string: ["n", "format"],
-// });
 yargs(hideBin(process.argv))
   .alias("h", "help")
   .alias("v", "version")

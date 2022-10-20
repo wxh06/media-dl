@@ -1,18 +1,15 @@
+/** @type {import("eslint").Linter.Config} */
 module.exports = {
+  root: true,
   env: {
-    es2021: true,
+    es2019: true,
     node: true,
   },
   extends: ["eslint:recommended", "airbnb-base", "plugin:prettier/recommended"],
-  parserOptions: {
-    ecmaVersion: "latest",
-  },
   overrides: [
     {
-      files: ["*.ts", "*.tsx"],
+      files: ["*.ts"],
       extends: [
-        "eslint:recommended",
-        "airbnb-base",
         "airbnb-typescript/base",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
@@ -20,7 +17,8 @@ module.exports = {
       ],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: "./tsconfig.json",
+        project: "tsconfig.json",
+        tsconfigRootDir: __dirname,
       },
       rules: {
         quotes: [
