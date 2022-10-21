@@ -35,7 +35,7 @@ export default {
     const dash = await getDash(avid, cid);
 
     return {
-      ...supportedFormats.reduce(
+      media: supportedFormats.reduce(
         (p, c) =>
           Object.assign(p, {
             [c.quality]: { format: c.format, description: c.new_description },
@@ -54,10 +54,8 @@ export default {
       formats
         .map((format) => format.toString())
         .map(async (format) => {
-          if (format.includes(".") || format.length > 4)
-            // eslint-disable-next-line no-underscore-dangle
-            return [dash[format]._url];
-
+          if (format.includes(".")) return [dash.video[format].url];
+          if (format.length > 4) return [dash.audio[format].url];
           return getDurl(avid, cid, format);
         })
     );

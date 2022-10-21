@@ -14,7 +14,7 @@ export default async function getDash(avid: number, cid: number, url = false) {
   if (code) throw Error(message);
 
   return {
-    ...Object.fromEntries(
+    video: Object.fromEntries(
       dash.video.map((v) => [
         `${v.id}.${v.codecid}`,
         {
@@ -23,11 +23,11 @@ export default async function getDash(avid: number, cid: number, url = false) {
           description: supportedFormats.find((f) => f.quality === v.id)
             ?.new_description,
           resolution: [v.width, v.height],
-          ...(url ? { _url: v.base_url } : {}),
+          ...(url ? { url: v.base_url } : {}),
         },
       ])
     ),
-    ...Object.fromEntries(
+    audio: Object.fromEntries(
       dash.audio.map((a) => [
         a.id,
         {
@@ -40,7 +40,7 @@ export default async function getDash(avid: number, cid: number, url = false) {
             30250: "杜比全景声",
             30251: "Hi-Res无损",
           }[a.id],
-          ...(url ? { _url: a.base_url } : {}),
+          ...(url ? { url: a.base_url } : {}),
         },
       ])
     ),

@@ -15,7 +15,13 @@ yargs(hideBin(process.argv))
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (yargs) => yargs.positional("url", { type: "string" }),
     (argv) => {
-      list(new URL(argv.url!)).then(console.table).catch(console.error);
+      list(new URL(argv.url!))
+        .then(({ media, video, audio }) => {
+          console.table(media);
+          console.table(video);
+          console.table(audio);
+        })
+        .catch(console.error);
     }
   )
   .command(
